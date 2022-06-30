@@ -8,6 +8,7 @@ import {
   TableRow
 } from '@mui/material';
 import TodoTableItem from './TodoTableItem';
+import PropTypes from 'prop-types';
 
 const TodoTable = ({ todos = [], onChange }) => {
   return (
@@ -34,6 +35,18 @@ const TodoTable = ({ todos = [], onChange }) => {
       </Table>
     </TableContainer>
   );
+};
+
+TodoTable.propTypes = {
+  todos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      title: PropTypes.string,
+      userId: PropTypes.number,
+      completed: PropTypes.bool
+    }).isRequired
+  ),
+  onChange: PropTypes.func
 };
 
 export default TodoTable;

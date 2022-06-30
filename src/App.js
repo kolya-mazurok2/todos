@@ -1,9 +1,8 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import Header from './components/UI/Header';
 import Home from './pages/Home';
-import { fetchAll, loadFailed } from './store/slices/todosSlice';
+import { fetchAll } from './store/slices/todosSlice';
 
 const App = () => {
   const theme = createTheme();

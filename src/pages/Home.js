@@ -2,6 +2,7 @@ import { CssBaseline, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import TodoCounter from '../components/todo/TodoCounter';
 import TodoTable from '../components/todo/TodoTable';
 import { update } from '../store/slices/todosSlice';
 
@@ -51,6 +52,8 @@ const Home = () => {
           Something went wrong!
         </Typography>
       )}
+
+      {!isLoading && !isError && <TodoCounter todos={filteredTodos} />}
 
       {!isLoading && !isError && <TodoTable todos={filteredTodos} onChange={handleChange} />}
     </Container>

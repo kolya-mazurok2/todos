@@ -1,4 +1,5 @@
 import { TableCell, TableRow } from '@mui/material';
+import PropTypes from 'prop-types';
 
 const TodoTableItem = ({ title, completed, onChange }) => {
   return (
@@ -16,6 +17,12 @@ const TodoTableItem = ({ title, completed, onChange }) => {
       </TableCell>
     </TableRow>
   );
+};
+
+TodoTableItem.propTypes = {
+  title: PropTypes.string.isRequired,
+  completed: PropTypes.bool.isRequired,
+  onChange: PropTypes.func
 };
 
 export default TodoTableItem;

@@ -1,24 +1,39 @@
 import { CssBaseline, Pagination, Typography } from '@mui/material';
 import { Container } from '@mui/system';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import TodoCounter from '../components/todo/TodoCounter';
 import TodoTable from '../components/todo/TodoTable';
 import { update } from '../store/slices/todosSlice';
 import Switch from '@mui/material/Switch';
 import TodoFilterForm from '../components/todo/TodoFilterForm';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { isEqual } from 'lodash';
+
+const HOME_HISTORY_DEFAULT = {
+  page: 1,
+  perPage: 10,
+  totalPages: 1,
+  infinityScroll: false,
+  filterForm: {
+    keyword: '',
+    completed: 'all'
+  }
+};
 
 const Home = () => {
   const dispatch = useDispatch();
 
   const { entities: inputTodos, isLoading, isError } = useSelector((state) => state.todos);
 
+  const [homeHistory, setHomeHistory] = useLocalStorage('homeHistory', HOME_HISTORY_DEFAULT);
+
   const [todos, setTodos] = useState([]);
   const [filteredTodos, setFilteredTodos] = useState([]);
-  const [page, setPage] = useState(1);
-  const [perPage] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-  const [infinityScroll, setInfinityScroll] = useState(false);
+  const [page, setPage] = useState(homeHistory.page);
+  const [perPage] = useState(homeHistory.perPage);
+  const [totalPages, setTotalPages] = useState(homeHistory.totalPages);
+  const [infinityScroll, setInfinityScroll] = useState(homeHistory.infinityScroll);
 
   const handleChange = (id, isCompleted) => {
     todos.map((todo) => {
@@ -41,24 +56,31 @@ const Home = () => {
     setInfinityScroll(checked);
   };
 
-  const handleFiltersChange = (formFields) => {
-    setPage(1);
+  const handleFiltersChange = useCallback(
+    (formFields) => {
+      if (formFields.isUserChange) {
+        setPage(1);
+      }
 
-    let newTodos = [];
+      let newTodos = [];
 
-    if (formFields.completed === 'all') {
-      newTodos = inputTodos.filter((inputTodo) => {
-        return inputTodo.title.includes(formFields.keyword);
-      });
-    } else {
-      const isCompleted = formFields.completed === 'completed';
-      newTodos = inputTodos.filter((inputTodo) => {
-        return inputTodo.title.includes(formFields.keyword) && inputTodo.completed === isCompleted;
-      });
-    }
+      if (formFields.completed === 'all') {
+        newTodos = inputTodos.filter((inputTodo) => {
+          return inputTodo.title.includes(formFields.keyword);
+        });
+      } else {
+        const isCompleted = formFields.completed === 'completed';
+        newTodos = inputTodos.filter((inputTodo) => {
+          return (
+            inputTodo.title.includes(formFields.keyword) && inputTodo.completed === isCompleted
+          );
+        });
+      }
 
-    setTodos(newTodos);
-  };
+      setTodos(newTodos);
+    },
+    [inputTodos]
+  );
 
   const pageHasScroll = () => {
     const html = document.getElementsByTagName('html')[0];
@@ -109,6 +131,22 @@ const Home = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [totalPages, page]);
 
+  useEffect(() => {
+    const history = {
+      ...homeHistory,
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      infinityScroll: infinityScroll
+    };
+
+    if (isEqual(homeHistory, history)) {
+      return;
+    }
+
+    setHomeHistory(history);
+  }, [page, perPage, totalPages, infinityScroll, homeHistory, setHomeHistory]);
+
   return (
     <Container maxWidth="sm">
       <CssBaseline />
@@ -116,7 +154,7 @@ const Home = () => {
       <Typography variant="h5">
         <Typography variant="span">Toggle Pagination</Typography>
 
-        <Switch onChange={handlePaginationChange} />
+        <Switch onChange={handlePaginationChange} checked={infinityScroll} />
       </Typography>
 
       {isLoading && (
@@ -133,7 +171,10 @@ const Home = () => {
 
       {!isLoading && !isError && (
         <Fragment>
-          <TodoFilterForm onChange={handleFiltersChange} />
+          <TodoFilterForm
+            defaultState={{ ...homeHistory.filterForm }}
+            onChange={handleFiltersChange}
+          />
 
           <TodoCounter todos={filteredTodos} />
 

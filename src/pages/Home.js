@@ -1,17 +1,19 @@
 import { CssBaseline, Pagination, Typography } from '@mui/material';
 import { Container } from '@mui/system';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import TodoCounter from '../components/todo/TodoCounter';
 import TodoTable from '../components/todo/TodoTable';
 import { update } from '../store/slices/todosSlice';
 import Switch from '@mui/material/Switch';
+import TodoFilterForm from '../components/todo/TodoFilterForm';
 
 const Home = () => {
   const dispatch = useDispatch();
 
-  const { entities: todos, isLoading, isError } = useSelector((state) => state.todos);
+  const { entities: inputTodos, isLoading, isError } = useSelector((state) => state.todos);
 
+  const [todos, setTodos] = useState([]);
   const [filteredTodos, setFilteredTodos] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage] = useState(10);
@@ -39,6 +41,25 @@ const Home = () => {
     setInfinityScroll(checked);
   };
 
+  const handleFiltersChange = (formFields) => {
+    setPage(1);
+
+    let newTodos = [];
+
+    if (formFields.completed === 'all') {
+      newTodos = inputTodos.filter((inputTodo) => {
+        return inputTodo.title.includes(formFields.keyword);
+      });
+    } else {
+      const isCompleted = formFields.completed === 'completed';
+      newTodos = inputTodos.filter((inputTodo) => {
+        return inputTodo.title.includes(formFields.keyword) && inputTodo.completed === isCompleted;
+      });
+    }
+
+    setTodos(newTodos);
+  };
+
   const pageHasScroll = () => {
     const html = document.getElementsByTagName('html')[0];
     return html.scrollHeight > html.clientHeight;
@@ -46,7 +67,7 @@ const Home = () => {
 
   const scrolledToBottom = (offset, gap = 0) => {
     const html = document.getElementsByTagName('html')[0];
-    console.log(offset, html.scrollHeight, html.clientHeight, gap);
+
     return offset >= html.scrollHeight - html.clientHeight - gap;
   };
 
@@ -77,7 +98,7 @@ const Home = () => {
       if (totalPages <= page) {
         return;
       }
-      console.log(scrolledToBottom(window.pageYOffset, 40));
+
       if (scrolledToBottom(window.pageYOffset, 40)) {
         setPage(page + 1);
       }
@@ -110,17 +131,23 @@ const Home = () => {
         </Typography>
       )}
 
-      {!isLoading && !isError && <TodoCounter todos={filteredTodos} />}
+      {!isLoading && !isError && (
+        <Fragment>
+          <TodoFilterForm onChange={handleFiltersChange} />
 
-      {!isLoading && !isError && <TodoTable todos={filteredTodos} onChange={handleChange} />}
+          <TodoCounter todos={filteredTodos} />
 
-      {!infinityScroll && (
-        <Pagination
-          count={totalPages}
-          defaultPage={page}
-          color="primary"
-          onChange={handlePageChange}
-        />
+          <TodoTable todos={filteredTodos} onChange={handleChange} />
+
+          {!infinityScroll && totalPages > 1 && (
+            <Pagination
+              count={totalPages}
+              page={page}
+              color="primary"
+              onChange={handlePageChange}
+            />
+          )}
+        </Fragment>
       )}
     </Container>
   );

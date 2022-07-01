@@ -1,25 +1,22 @@
-import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField
-} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-const TodoFilterForm = ({ onChange }) => {
+const TodoFilterForm = ({ defaultState, onChange }) => {
   const [formFields, setFormFields] = useState({
-    keyword: '',
-    completed: 'all'
+    keyword: defaultState.keyword,
+    completed: defaultState.completed,
+    isUserChange: false
   });
+
+  const updateFormField = (field, value) => {
+    setFormFields({ ...formFields, [field]: value, isUserChange: true });
+  };
 
   useEffect(() => {
     onChange(formFields);
-  }, [formFields]);
+  }, [formFields, onChange]);
 
   return (
     <Box component="form">
@@ -27,8 +24,9 @@ const TodoFilterForm = ({ onChange }) => {
         <TextField
           label="Search by title"
           variant="outlined"
+          value={formFields.keyword}
           onChange={(event) => {
-            setFormFields({ ...formFields, keyword: event.currentTarget.value });
+            updateFormField('keyword', event.currentTarget.value);
           }}
         />
       </FormControl>
@@ -41,7 +39,7 @@ const TodoFilterForm = ({ onChange }) => {
           id="completed"
           value={formFields.completed}
           onChange={(event) => {
-            setFormFields({ ...formFields, completed: event.target.value });
+            updateFormField('completed', event.target.value);
           }}>
           <MenuItem value="all">All</MenuItem>
           <MenuItem value="completed">Completed</MenuItem>
@@ -53,6 +51,11 @@ const TodoFilterForm = ({ onChange }) => {
 };
 
 TodoFilterForm.propTypes = {
+  defaultState: PropTypes.shape({
+    keyword: PropTypes.string,
+    completed: PropTypes.oneOf(['all', 'completed', 'not-completed']),
+    isUserChange: PropTypes.bool
+  }).isRequired,
   onChange: PropTypes.func
 };
 

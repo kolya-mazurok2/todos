@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 
 const TodoTable = ({ todos = [], onChange }) => {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} className="table table--todo">
       <Table sx={{ minWidth: 320 }}>
         <TableHead>
           <TableRow>

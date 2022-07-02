@@ -9,6 +9,7 @@ import Switch from '@mui/material/Switch';
 import TodoFilterForm from '../components/todo/TodoFilterForm';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { isEqual } from 'lodash';
+import { pageHasScroll, pageScrolledToBottom } from '../helpers/dom';
 
 const HOME_HISTORY_DEFAULT = {
   page: 1,
@@ -53,13 +54,23 @@ const Home = () => {
   };
 
   const handlePaginationChange = (event, checked) => {
+    setPage(1);
     setInfinityScroll(checked);
   };
 
   const handleFiltersChange = useCallback(
     (formFields) => {
-      if (formFields.isUserChange) {
+      const newHistory = {
+        ...homeHistory,
+        filterForm: {
+          keyword: formFields.keyword,
+          completed: formFields.completed
+        }
+      };
+
+      if (!isEqual(newHistory.filterForm, homeHistory.filterForm)) {
         setPage(1);
+        setHomeHistory(newHistory);
       }
 
       let newTodos = [];
@@ -79,19 +90,8 @@ const Home = () => {
 
       setTodos(newTodos);
     },
-    [inputTodos]
+    [inputTodos, homeHistory, setHomeHistory]
   );
-
-  const pageHasScroll = () => {
-    const html = document.getElementsByTagName('html')[0];
-    return html.scrollHeight > html.clientHeight;
-  };
-
-  const scrolledToBottom = (offset, gap = 0) => {
-    const html = document.getElementsByTagName('html')[0];
-
-    return offset >= html.scrollHeight - html.clientHeight - gap;
-  };
 
   useEffect(() => {
     const newTodos = infinityScroll
@@ -116,12 +116,16 @@ const Home = () => {
   }, [totalPages, page, infinityScroll]);
 
   useEffect(() => {
+    if (!infinityScroll) {
+      return;
+    }
+
     const onScroll = () => {
       if (totalPages <= page) {
         return;
       }
 
-      if (scrolledToBottom(window.pageYOffset, 40)) {
+      if (pageScrolledToBottom(window.pageYOffset, 40)) {
         setPage(page + 1);
       }
     };
@@ -129,7 +133,7 @@ const Home = () => {
     window.removeEventListener('scroll', onScroll);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [totalPages, page]);
+  }, [totalPages, page, infinityScroll]);
 
   useEffect(() => {
     const history = {
@@ -151,20 +155,30 @@ const Home = () => {
     <Container maxWidth="sm">
       <CssBaseline />
 
-      <Typography variant="h5">
+      <Typography variant="h5" className="toggle-pagination">
         <Typography variant="span">Toggle Pagination</Typography>
 
         <Switch onChange={handlePaginationChange} checked={infinityScroll} />
       </Typography>
 
       {isLoading && (
-        <Typography component="h4" align="center" color="text.primary" gutterBottom>
+        <Typography
+          component="h4"
+          align="center"
+          color="text.primary"
+          gutterBottom
+          className="title title--loading">
           Loading...
         </Typography>
       )}
 
       {isError && (
-        <Typography component="h4" align="center" color="text.primary" gutterBottom>
+        <Typography
+          component="h4"
+          align="center"
+          color="text.primary"
+          gutterBottom
+          className="title title--error">
           Something went wrong!
         </Typography>
       )}
@@ -182,6 +196,7 @@ const Home = () => {
 
           {!infinityScroll && totalPages > 1 && (
             <Pagination
+              className="pagination pagination--todo"
               count={totalPages}
               page={page}
               color="primary"

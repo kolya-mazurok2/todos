@@ -3,7 +3,9 @@
 React App
 
 ## Short description
+
 App consists of:
+
 - TODOs list that is fetching from https://jsonplaceholder.typicode.com/ API
 - TODOs counter (count only the ones which are in status completed)
 - Pagination (shows 10 items per page)
@@ -12,7 +14,9 @@ App consists of:
 - Unit tests
 
 ## Libraries
+
 Used libraries:
+
 - Redux Toolkit https://redux-toolkit.js.org/
 - PropTypes https://reactjs.org/docs/typechecking-with-proptypes.html
 - Material https://mui.com/

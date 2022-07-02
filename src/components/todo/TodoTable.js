@@ -22,7 +22,7 @@ const TodoTable = ({ todos = [], onChange }) => {
           </TableRow>
         </TableHead>
 
-        <TableBody>
+        <TableBody data-testid="todo-table-body">
           {todos.map((todo) => (
             <TodoTableItem
               key={todo.id}

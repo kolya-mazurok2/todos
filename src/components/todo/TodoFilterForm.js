@@ -29,6 +29,7 @@ const TodoFilterForm = ({ defaultState, onChange }) => {
             onChange={(event) => {
               updateFormField('keyword', event.currentTarget.value);
             }}
+            data-testid="keyword"
           />
         </FormControl>
 
@@ -41,7 +42,8 @@ const TodoFilterForm = ({ defaultState, onChange }) => {
             value={formFields.completed}
             onChange={(event) => {
               updateFormField('completed', event.target.value);
-            }}>
+            }}
+            data-testid="completed">
             <MenuItem value="all">All</MenuItem>
             <MenuItem value="completed">Completed</MenuItem>
             <MenuItem value="not-completed">Not Completed</MenuItem>

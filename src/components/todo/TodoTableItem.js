@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 
 const TodoTableItem = ({ title, completed, onChange }) => {
   return (
-    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-      <TableCell component="th" scope="row">
+    <TableRow
+      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+      data-testid="todo-table-item">
+      <TableCell component="th" scope="row" data-testid="title">
         {title}
       </TableCell>
 
@@ -13,6 +15,7 @@ const TodoTableItem = ({ title, completed, onChange }) => {
           type="checkbox"
           defaultChecked={completed}
           onChange={(event) => onChange(event.currentTarget.checked)}
+          data-testid="completed"
         />
       </TableCell>
     </TableRow>

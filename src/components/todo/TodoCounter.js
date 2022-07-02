@@ -18,7 +18,9 @@ const TodoCounter = ({ todos }) => {
       gutterBottom
       className="todo--counter">
       <Typography component="strong">Completed: </Typography>
-      <Typography component="span">{completedTodosNum}</Typography>
+      <Typography component="span" data-testid="completed-number">
+        {completedTodosNum}
+      </Typography>
     </Typography>
   );
 };

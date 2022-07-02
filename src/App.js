@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import Header from './components/UI/Header';
 import Home from './pages/Home';
 import { fetchAll } from './store/slices/todosSlice';
+import StyledHome from './styled/pages/StyledHome';
 
 const App = () => {
   const theme = createTheme();
@@ -16,7 +17,9 @@ const App = () => {
       <div className="App">
         <Header />
 
-        <Home />
+        <StyledHome>
+          <Home />
+        </StyledHome>
       </div>
     </ThemeProvider>
   );

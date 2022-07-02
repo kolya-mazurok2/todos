@@ -11,7 +11,12 @@ const TodoCounter = ({ todos }) => {
   }, 0);
 
   return (
-    <Typography component="h4" align="center" color="text.primary" gutterBottom>
+    <Typography
+      component="h4"
+      align="center"
+      color="text.primary"
+      gutterBottom
+      className="todo--counter">
       <Typography component="strong">Completed: </Typography>
       <Typography component="span">{completedTodosNum}</Typography>
     </Typography>

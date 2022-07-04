@@ -11,9 +11,15 @@ const update = createAsyncThunk('todos/updateById', async (todo) => {
   return isUpdated;
 });
 
+const initialState = {
+  entities: [],
+  isLoading: false,
+  isError: false
+};
+
 const todosSlice = createSlice({
   name: 'todos',
-  initialState: { entities: [], isLoading: false, isError: false },
+  initialState: initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchAll.fulfilled, (state, action) => {
@@ -43,4 +49,4 @@ const todosSlice = createSlice({
 
 export default todosSlice.reducer;
 
-export { fetchAll, update };
+export { fetchAll, update, initialState };

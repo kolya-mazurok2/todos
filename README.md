@@ -1,7 +1,7 @@
 # Todos
 
 React pet project whose primary purpose is to show skills working with React and corresponding instruments such as:
-- javscript
+- javascript
 - redux toolkit
 - material
 - fetch

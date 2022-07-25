@@ -9,4 +9,4 @@ React pet project whose primary purpose is to show skills working with React and
 
 !!! Some processes, such as 'completed' status update is imitated
 
-Api ref: https://jsonplaceholder.typicode.com/
+API ref: https://jsonplaceholder.typicode.com/
